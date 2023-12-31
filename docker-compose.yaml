@@ -1,0 +1,56 @@
+version: "3.8"
+services:
+  wordpress: # https://hub.docker.com/r/bitnami/wordpress
+    restart: unless-stopped
+    image: docker.io/bitnami/wordpress:6.4.2
+    links:
+     - mariadb:mysql
+    environment:
+      - WORDPRESS_USERNAME=<replace> # notadminpls
+      - WORDPRESS_PASSWORD=<replace> # 0fweihjewofihbfwe0ihgvweihvewroibhwro0iberb
+      - WORDPRESS_EMAIL=<replace> # some@thing.com
+      - WORDPRESS_FIRST_NAME=<replace> # Paco
+      - WORDPRESS_LAST_NAME=<replace> # Fernandez
+      - WORDPRESS_BLOG_NAME=<replace> # Nice Site
+      - WORDPRESS_TABLE_PREFIX= <replace> # wp_
+      - WORDPRESS_AUTO_UPDATE_LEVEL=minor # major,...
+      - WORDPRESS_ENABLE_REVERSE_PROXY=yes # Default: no , necessary behind proxy
+      - WORDPRESS_DATABASE_HOST=mariadb
+      - WORDPRESS_DATABASE_PORT_NUMBER=3306
+      - WORDPRESS_DATABASE_USER=<replace> # Configured on mariadb service
+      - WORDPRESS_DATABASE_PASSWORD=<replace> # Configured on mariadb service
+      - WORDPRESS_DATABASE_NAME=<replace> # Configured on mariadb service
+      - WORDPRESS_SKIP_BOOTSTRAP=yes # Necessary if wordpress is already set up
+      - WORDPRESS_MULTISITE_HOST=www.something.com # Makes life easier
+      - WORDPRESS_ENABLE_MULTISITE=yes # Makes life easier
+    ports:
+      - '8080:8080'
+      - '8443:8443'
+    volumes:
+      - ./wordpress:/bitnami/wordpress
+    networks:
+      wordpress_net:
+        ipv4_address: 10.5.0.7 #! Take care if you have multiple instances on same host
+
+  mariadb:
+    restart: unless-stopped
+    image: docker.io/bitnami/mariadb:10.6
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - MARIADB_USER=<replace>
+      - MARIADB_PASSWORD=<replace>
+      - MARIADB_ROOT_PASSWORD=<replace>
+      - MARIADB_DATABASE=<replace>
+    volumes:
+      - './mariadb:/bitnami/mariadb'
+    networks:
+      wordpress_net:
+        ipv4_address: 10.5.0.6 #! Take care if you have multiple instances on same host
+
+networks:
+  wordpress_net:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1

@@ -1,6 +1,8 @@
 #!/bin/bash
 
-PATH="/docker/dedalo-wordpress"
+# Reference: https://docs.bitnami.com/tutorials/backup-restore-data-containers/
+
+PATH="/docker/some-wordpress"
 WORDPRESS_SVC="wordpress"
 MARIADB_SVC="mariadb"
 
